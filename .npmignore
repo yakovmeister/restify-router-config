@@ -1,0 +1,8 @@
+/src
+/test
+.nyc_output
+.rpt2_cache
+.travis.yml
+.gitignore
+rollup.config.js
+tsconfig.json
