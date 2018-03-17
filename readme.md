@@ -1,6 +1,6 @@
-restify-route-config
+# restify-router-config
 ---  
-  
+ a 
 react-router-config inspired Restify routing tool. meh...  
   
 ## Installation
