@@ -1,0 +1,53 @@
+restify-route-config
+---  
+  
+react-router-config inspired Restify routing tool. meh...  
+  
+## Installation
+  
+```
+npm install -S restify-router-config
+```  
+  
+## Usage
+  
+```javascript
+const restify = require('restify')
+const router = require('restify-router-config')
+const { getUserById, getUser, login } = require('./controllers/users')
+const { restrictedRoute } = require('./middlewares')
+
+/** create restify server */
+const server = restify.createServer()
+/** configure your routes */
+router(server)([
+	{
+		group: 'users',
+		routes: [
+			{
+				match: '/:id',
+				middleware: restrictedRoute,
+				method: 'get',
+				action: getUserById
+			},
+			{
+				match: '/',
+				method: 'get',
+				action: getUser
+			}
+		]
+	},
+	{
+		match: '/login',
+		method: 'post',
+		action: login
+	}
+])
+
+server.listen(8080)
+```  
+  
+## Important Notice
+  
+* Didn't have time to write tests, so yea, don't expect that things should work the way it should.
+* Current releases may not be stable until further notice. I didn't have much time to tinker around. Any kind of help is appreciated.
