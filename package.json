@@ -1,16 +1,14 @@
 {
   "name": "restify-router-config",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean:assets": "rimraf ./public/assets",
-    "postinstall": "npm run compile",
-    "clean": "rm -rf dist && mkdir dist",
-    "clean:compile": "rm -rf dist/compiled",
-    "compile:babel": "babel-compile -p env src:dist",
+    "clean": "rimraf dist && mkdir dist",
+    "clean:compile": "rimraf dist/compiled",
+    "compile:babel": "babel-compile -p env -p stage-0 -p stage-1 -p stage-2 src:dist/compiled",
     "compile:minify": "minify dist/compiled -d dist",
-    "compile": "npm run clean && npm run compile:babel",
+    "compile": "npm run clean && npm run compile:babel && npm run compile:minify && npm run clean:compile",
     "dev": "nodemon server.js --exec babel-node --presets=env,stage-0,stage-1,stage-2 --watch",
     "test": "_mocha test --require babel-polyfill --require babel-register"
   },
