@@ -1,5 +1,5 @@
 # restify-router-config  
-
+---
 react-router-config inspired Restify routing tool. 
   
 ## Installation
@@ -74,9 +74,9 @@ router(server)([
 		]
 	}
 ])
-// the code from above would use `restrictedRoute` middleware first, and if you're going to access /users/:id, it would also 
-use `anotherMiddleware` middleware.
 ```
+the code from above would use `restrictedRoute` middleware first, and if you're going to access /users/:id, 
+it would also use `anotherMiddleware` middleware.  
 
 ## Disclaimer
   
