@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "lib": [
+      "es6",
+      "es2017.object"
+    ],
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "baseUrl": "src",
+    "paths": {
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

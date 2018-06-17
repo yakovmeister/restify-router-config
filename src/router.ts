@@ -1,40 +1,4 @@
-
-/**
- * Sort string based on slash occurence and length of
- * its last phrase.
- * 
- * @param  {string} previous previous sort object
- * @param  {string} current  current sort object
- * @returns new sort value
- */
-function sortByNumberOfSlashes(previous, current) {
-	previous 	= previous.match.split('/')
-	current 	= current.match.split('/')
-
-	const currentSlashCount 		= current.length
-				, previousSlashCount 	= previous.length
-				, currentLastPhrase 	= current[current.length - 1].length
-				, previousLastPhrase 	= previous[previous.length - 1].length
-
-	if (currentSlashCount === previousSlashCount) {
-		return currentLastPhrase - previousLastPhrase
-	}
-
-	return currentSlashCount - previousSlashCount
-}
-
-/**
- * sorts the given routes
- * @param  {array} routes array of routes
- * @returns sorted routes
- */
-function sortRoutes(routes) {
-	if (!Array.isArray(routes)) {
-		throw new Error(`routes are expected to be an array of object, ${typeof routes} given.`)
-	}
-
-	return routes.sort(sortByNumberOfSlashes)
-}
+import { sortRoutes } from './sorts'
 
 /**
  * normalize our endpoint, make sure it doesn't 
@@ -42,7 +6,7 @@ function sortRoutes(routes) {
  * @param  {string} endpoint endpoint to be normalized
  * @returns normalized endpoint
  */
-function normalizeEndpoint(endpoint) {
+function normalizeEndpoint(endpoint: string) {
 	return `/${endpoint.replace(/^\/|\/$/, '')}`
 }
 
@@ -55,8 +19,8 @@ function normalizeEndpoint(endpoint) {
  * @param  {string} prefix prepended to the beginning of endpoint
  * @returns object containing the translated route
  */
-function routeTranslator(route, middleware, prefix) {
-	if (Array.isArray(route)) {
+function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
+	if (Array.isArray(route) && route.length) {
 		return route.map(function (_route) {
 			if (_route.group) {
 				return routeTranslator(
@@ -87,12 +51,11 @@ function routeTranslator(route, middleware, prefix) {
  * @param {Server} server restify server
  * @returns routing function
  */
-export default function configureRoutes(server) {
-
+export default function configureRoutes(server : any) {
 	return function (routes) {
-		routes = sortRoutes(
+		routes = routes.length ? sortRoutes(
 			[].concat( ...routeTranslator(routes) )
-		)
+		) : []
 
 		// safely route flatten translated routes.
 		return routes.map(function (route) {
@@ -108,4 +71,3 @@ export default function configureRoutes(server) {
 		})
 	}
 }
-
