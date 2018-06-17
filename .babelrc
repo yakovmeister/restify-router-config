@@ -1,9 +1,11 @@
 {
   "presets": [
-		"env",
-		"stage-0",
-		"stage-1",
-		"stage-2"
-	],
-	"plugins": []
+    [
+      "@babel/preset-env",
+      { 
+        "modules": false 
+      }
+    ],
+    "@babel/preset-stage-3"
+  ]
 }

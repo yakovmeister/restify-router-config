@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "",
   "main": "dist/index.min.js",
+  "types": "dist/src/router.d.ts",
   "scripts": {
     "test": "nyc --check-coverage --lines 80 mocha -r ts-node/register test/**.test.ts",
     "rollup": "rollup -c",
