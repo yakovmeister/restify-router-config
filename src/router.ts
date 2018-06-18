@@ -7,7 +7,7 @@ import { sortRoutes } from './sorts'
  * @returns normalized endpoint
  */
 function normalizeEndpoint(endpoint: string) {
-	return `/${endpoint.replace(/^\/|\/$/, '')}`
+  return `/${endpoint.replace(/^\/|\/$/, '')}`
 }
 
 /**
@@ -20,54 +20,59 @@ function normalizeEndpoint(endpoint: string) {
  * @returns object containing the translated route
  */
 function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
-	if (Array.isArray(route) && route.length) {
-		return route.map(function (_route) {
-			if (_route.group) {
-				return routeTranslator(
-					_route.routes
-					, _route.middleware
-					, _route.group
-				)
-			}
+  if (Array.isArray(route) && route.length) {
+    return route.map(function (_route) {
+      if (_route.group) {
+        return routeTranslator(
+          _route.routes
+          , _route.middleware
+          , _route.group
+        )
+      }
 
-			return routeTranslator(_route, middleware, prefix)
-		})
-	}
+      return routeTranslator(_route, middleware, prefix)
+    })
+  }
 
-	middleware = [ middleware, route.middleware ].filter(elem => elem)
-	prefix 		 = prefix ? `${prefix}${route.match}`.replace('//', '/') : route.match
+  middleware = [ middleware, route.middleware ].filter(elem => elem)
+  prefix     = prefix ? `${prefix}${route.match}`.replace('//', '/') : route.match
 
-	return {
-		method: route.method,
-		match: normalizeEndpoint(prefix),
-		middleware,
-		action: route.action
-	}
+  return {
+    method: route.method,
+    match: normalizeEndpoint(prefix),
+    middleware,
+    action: route.action
+  }
 }
 
 /**
  * takes a restify server as an argument, returns a function
  * that takes an array of object.
  * @param {Server} server restify server
+ * @param {boolean} verbose log routing
  * @returns routing function
  */
-export default function configureRoutes(server : any) {
-	return function (routes) {
-		routes = routes.length ? sortRoutes(
-			[].concat( ...routeTranslator(routes) )
-		) : []
+export default function configureRoutes(server : any, verbose = false) {
+  return function (routes) {
+    routes = routes.length ? sortRoutes(
+      [].concat( ...routeTranslator(routes) )
+    ) : []
 
-		// safely route flatten translated routes.
-		return routes.map(function (route) {
-			if (route.middleware.length) {
-				return server[route.method](
-					route.match
-					, ...route.middleware
-					, route.action
-				)
-			}
+    // safely route flatten translated routes.
+    return routes.map(function (route) {
+      if (verbose) {
+        console.log(`Routing: [${route.method}] - ${route.match}`)
+      }
 
-			return server[route.method](route.match, route.action)
-		})
-	}
+      if (route.middleware.length) {
+        return server[route.method](
+          route.match
+          , ...route.middleware
+          , route.action
+        )
+      }
+
+      return server[route.method](route.match, route.action)
+    })
+  }
 }

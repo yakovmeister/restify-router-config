@@ -58,8 +58,8 @@ export function wildCard(previous: any, current: any) {
   
   /**
    * ensures that those that doesn't have wildcard are pushed to
-   * top, and full length wildcards are pushed to btm
-  //  */
+   * top, and full length wildcards are pushed to bottom
+   */
   if (!previousMatches) {
     return -1
   }
