@@ -48,8 +48,8 @@ function wildCard(previous, current) {
   var totalLength = currentUri ? currentUri.length : 0;
   /**
    * ensures that those that doesn't have wildcard are pushed to
-   * top, and full length wildcards are pushed to btm
-  //  */
+   * top, and full length wildcards are pushed to bottom
+   */
 
   if (!previousMatches) {
     return -1;
@@ -127,15 +127,24 @@ function routeTranslator(route, middleware, prefix) {
  * takes a restify server as an argument, returns a function
  * that takes an array of object.
  * @param {Server} server restify server
+ * @param {boolean} verbose log routing
  * @returns routing function
  */
 
 
-function configureRoutes(server) {
+function configureRoutes(server, verbose) {
+  if (verbose === void 0) {
+    verbose = false;
+  }
+
   return function (routes) {
     routes = routes.length ? sortRoutes([].concat.apply([], routeTranslator(routes))) : []; // safely route flatten translated routes.
 
     return routes.map(function (route) {
+      if (verbose) {
+        console.log("Routing: [" + route.method + "] - " + route.match);
+      }
+
       if (route.middleware.length) {
         return server[route.method].apply(server, [route.match].concat(route.middleware, [route.action]));
       }
