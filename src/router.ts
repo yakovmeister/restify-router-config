@@ -86,8 +86,8 @@ function appendPrefix(route, prefix = false) {
  */
 function groupMiddleware (middlewares: Array<any>) {
   const positions = {
-    pre: [],
-    post: []
+    before: [],
+    after: []
   }
 
   middlewares.forEach(middleware => {
@@ -96,20 +96,20 @@ function groupMiddleware (middlewares: Array<any>) {
         positions[middleware[0]].push(middleware[1])
       }
     } else {
-      positions.pre.push(middleware)
+      positions.before.push(middleware)
     }
   })
 
-  const { pre, post } = positions
+  const { before, after } = positions
 
   return [
-    pre,
-    post
+    before,
+    after
   ]
 }
 
 function isValidMiddlewarePosition(data: string) {
-  return data === 'pre' || data === 'post'
+  return data === 'before' || data === 'after'
 }
 
 function isValidArray(data: string | Array<any>) {
@@ -138,9 +138,9 @@ export default function configureRoutes(server : any, verbose = false) {
       let action = [ route.action ]
 
       if (route.middleware.length) {
-        const [ pre, post ] = groupMiddleware(route.middleware)
+        const [ before, after ] = groupMiddleware(route.middleware)
 
-        action = [ ...pre, ...action, ...post]
+        action = [ ...before, ...action, ...after]
       }
 
       return server[route.method](route.match, ...action)
