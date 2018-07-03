@@ -59,6 +59,37 @@ router(server)([
 
 server.listen(8080)
 ```  
+
+### Setting middleware's execution
+
+You may choose to add middleware after the function's execution, in order to do that you must use the following syntax:
+
+```javascript
+import * as restify from 'restify'
+import router from 'restify-router-config'
+import { getUserById } from './controllers/users'
+import { authenticate, logger } from './middlewares'
+
+/** create restify server */
+const server = restify.createServer()
+/** configure your routes */
+// NOTE: you may or may not use group, but for the sake of grouping up
+// your endpoints it's best to use it.
+router(server)([
+  {
+    match: '/users/:id',
+    method: 'get',
+    middleware: [
+      ['pre', authenticate],
+      ['post', logger]
+    ]
+    action: getUserById
+  }
+])
+
+server.listen(8080)
+```
+in the example above, the `/users/:id` route is authenticated first, then executes `getUserById`, after the execution of the `getUserById` the `logger` is executed right away.
   
 ## Why use restify-router-config?  
   

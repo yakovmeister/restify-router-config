@@ -23,6 +23,7 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
   if (Array.isArray(route) && route.length) {
     return route.map(function (_route) {
       if (_route.group) {
+
         return routeTranslator(
           _route.routes
           , _route.middleware
@@ -34,7 +35,7 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
     })
   }
 
-  middleware = [ middleware, route.middleware ].filter(elem => elem)
+  middleware = mapMiddleware([ middleware, route.middleware ])
   prefix = appendPrefix(route.match, prefix)
 
   return {
@@ -43,6 +44,25 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
     middleware,
     action: route.action
   }
+}
+
+/**
+ * Properly map middlewares regardless if it's array or not
+ * @param middlewares 
+ * @return Array
+ */
+function mapMiddleware(middlewares) {
+  const returnMiddleware = []
+
+  middlewares.forEach(middleware => {
+    if (Array.isArray(middleware)) {
+      returnMiddleware.push(...middleware)
+    } else {
+      returnMiddleware.push(middleware)
+    }
+  })
+
+  return returnMiddleware.filter(item => item)
 }
 
 /**
