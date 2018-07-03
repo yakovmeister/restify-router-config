@@ -80,8 +80,8 @@ router(server)([
     match: '/users/:id',
     method: 'get',
     middleware: [
-      ['pre', authenticate],
-      ['post', logger]
+      ['before', authenticate],
+      ['after', logger]
     ]
     action: getUserById
   }
