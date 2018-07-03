@@ -23,6 +23,11 @@ export function groupSortWildcards(routes: Array<any>) {
     ]))
 }
 
+/**
+ * function for sorting based on slash count
+ * @param previous previous element
+ * @param current current element
+ */
 export function slashCount(previous: any, current: any) {
   previous = previous.match.split('/')
   current = current.match.split('/')
@@ -39,6 +44,10 @@ export function slashCount(previous: any, current: any) {
   return currentSlashes - previousSlashes
 }
 
+/**
+ * Group routes based on its slash count
+ * @param array routes
+ */
 export function groupBySlashes(array: Array<any>) {
   return array.reduce((previous, current) => {
     const key = current.match.split('/').length
@@ -49,6 +58,11 @@ export function groupBySlashes(array: Array<any>) {
   }, {})
 }
 
+/**
+ * function for sorting based on wildcards
+ * @param previous previous element
+ * @param current current element
+ */
 export function wildCard(previous: any, current: any) {
   const previousMatches = previous.match.match(/\/(\:[a-zA-Z0-9_-]{1,})/g)
   const currentMatches = current.match.match(/\/(\:[a-zA-Z0-9_-]{1,})/g)

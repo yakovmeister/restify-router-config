@@ -35,7 +35,7 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
   }
 
   middleware = [ middleware, route.middleware ].filter(elem => elem)
-  prefix     = prefix ? `${prefix}${route.match}`.replace('//', '/') : route.match
+  prefix = appendPrefix(route.match, prefix)
 
   return {
     method: route.method,
@@ -43,6 +43,57 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
     middleware,
     action: route.action
   }
+}
+
+/**
+ * append additional prefix
+ * @param route original route
+ * @param prefix route prefix
+ * @return string
+ */
+function appendPrefix(route, prefix = false) {
+  if (prefix) {
+    route = `${prefix}${route.match}`.replace('//', '/')
+  }
+
+  return route
+}
+
+/**
+ * Group middleware according to it's position
+ * @param middlewares 
+ * @return Array
+ */
+function groupMiddleware (middlewares: Array<any>) {
+  const positions = {
+    pre: [],
+    post: []
+  }
+
+  middlewares.forEach(middleware => {
+    if (isValidArray(middleware)) {
+      if (isValidMiddlewarePosition(middleware[0])) {
+        positions[middleware[0]].push(middleware[1])
+      }
+    } else {
+      positions.pre.push(middleware)
+    }
+  })
+
+  const { pre, post } = positions
+
+  return [
+    pre,
+    post
+  ]
+}
+
+function isValidMiddlewarePosition(data: string) {
+  return data === 'pre' || data === 'post'
+}
+
+function isValidArray(data: string | Array<any>) {
+  return Array.isArray(data) && data.length > 1
 }
 
 /**
@@ -64,15 +115,15 @@ export default function configureRoutes(server : any, verbose = false) {
         console.log(`Routing: [${route.method}] - ${route.match}`)
       }
 
+      let action = [ route.action ]
+
       if (route.middleware.length) {
-        return server[route.method](
-          route.match
-          , ...route.middleware
-          , route.action
-        )
+        const [ pre, post ] = groupMiddleware(route.middleware)
+
+        action = [ ...pre, ...action, ...post]
       }
 
-      return server[route.method](route.match, route.action)
+      return server[route.method](route.match, ...action)
     })
   }
 }

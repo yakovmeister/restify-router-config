@@ -12,6 +12,7 @@ This is an effort to maximize laziness in routing restify app. This tool include
 * Sorting - will sort your routes, wildcards has been taken into account too.
 * Grouping - will add a prefix to your routes depending on the group.
 * Multiple Middleware - will let you add one or more middleware in most convenient way.
+* Pre/Post Middleware - let's you define whether the middleware should execute before or after executing your function
   
 ## Installation
   

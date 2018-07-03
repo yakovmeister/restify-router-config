@@ -1,10 +1,12 @@
 import typescript from 'rollup-plugin-typescript2'
+import { uglify } from 'rollup-plugin-uglify'
 
 export default {
   entry: 'src/router.ts',
-  dest: 'dist/index.js',
-  format: 'es',
+  dest: 'dist/index.min.js',
+  format: 'cjs',
   plugins: [
-    typescript()
+    typescript(),
+    uglify()
   ]
 }
