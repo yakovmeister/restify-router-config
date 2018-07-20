@@ -12,6 +12,10 @@
   },
   "keywords": [
     "restify",
+    "restify-router",
+    "express",
+    "express-router-config",
+    "express-router",
     "router",
     "config",
     "react",

@@ -5,7 +5,9 @@
 [![NPM Version][npm-image]][npm-url]
 [![Downloads Stats][npm-downloads]][npm-url] 
   
-This is an effort to maximize laziness in routing restify app. This tool includes grouping of routes, sorting of routes, and applying multiple middleware in most convenient way, of course the structure is inspired by [react-router-config](https://www.npmjs.com/package/react-router-config).
+This is an effort to maximize laziness in routing restify app. This tool includes grouping of routes, sorting of routes, and applying multiple middleware in most convenient way, of course the structure is inspired by [react-router-config](https://www.npmjs.com/package/react-router-config).  
+  
+NOTE: This module is also compatible with [express](https://expressjs.com/) but usage may vary.
 
 ## Features: 
   
@@ -123,10 +125,6 @@ router(server)([
 the code from above would use `restrictedRoute` middleware first, and if you're going to access /users/:id, 
 it would also use `anotherMiddleware` middleware.  
 
-## Disclaimer
-  
-* ~~Didn't have time to write tests, don't expect that things should work the way it should.~~
-* Current releases may not be stable until further notice. I didn't have much time to tinker around. Any kind of help is appreciated.
 
 [npm-image]: https://img.shields.io/npm/v/restify-router-config.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/restify-router-config

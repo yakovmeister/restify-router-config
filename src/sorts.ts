@@ -13,6 +13,11 @@ export function sortRoutes(routes: Array<any>) {
   return groupSortWildcards(routes)
 }
 
+/**
+ * Group sorted routes based on wildcards
+ * @param routes 
+ * @return grouped routes
+ */
 export function groupSortWildcards(routes: Array<any>) {
   return Object.entries(routes)
     .map(([key, value]) => {

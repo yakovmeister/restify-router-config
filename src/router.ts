@@ -108,10 +108,20 @@ function groupMiddleware (middlewares: Array<any>) {
   ]
 }
 
+/**
+ * Checks whethere the position supplied is valid
+ * @param data 
+ * @return boolean
+ */
 function isValidMiddlewarePosition(data: string) {
   return data === 'before' || data === 'after'
 }
 
+/**
+ * Checks whether the supplied argument is array with values
+ * @param data 
+ * @return boolean
+ */
 function isValidArray(data: string | Array<any>) {
   return Array.isArray(data) && data.length > 1
 }
