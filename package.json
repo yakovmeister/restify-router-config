@@ -1,6 +1,6 @@
 {
   "name": "restify-router-config",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "description": "The laziest way to route your restify app.",
   "main": "dist/index.min.js",
   "types": "dist/src/router.d.ts",
