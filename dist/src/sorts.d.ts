@@ -4,6 +4,11 @@
  * @returns sorted routes
  */
 export declare function sortRoutes(routes: Array<any>): any;
+/**
+ * Group sorted routes based on wildcards
+ * @param routes
+ * @return grouped routes
+ */
 export declare function groupSortWildcards(routes: Array<any>): any;
 /**
  * function for sorting based on slash count

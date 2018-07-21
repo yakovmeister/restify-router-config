@@ -5,4 +5,4 @@
  * @param {boolean} verbose log routing
  * @returns routing function
  */
-export default function configureRoutes(server: any, verbose?: boolean): (routes: any) => any;
+export default function configureRoutes(server: any, verbose?: boolean, logger?: (message?: any, ...optionalParams: any[]) => void): (routes: any) => any;
