@@ -133,7 +133,7 @@ function isValidArray(data: string | Array<any>) {
  * @param {boolean} verbose log routing
  * @returns routing function
  */
-export default function configureRoutes(server : any, verbose = false) {
+export default function configureRoutes(server : any, verbose = false, logger = console.log) {
   return function (routes) {
     routes = routes.length ? sortRoutes(
       [].concat( ...routeTranslator(routes) )
@@ -142,7 +142,7 @@ export default function configureRoutes(server : any, verbose = false) {
     // safely route flatten translated routes.
     return routes.map(function (route) {
       if (verbose) {
-        console.log(`Routing: [${route.method}] - ${route.match}`)
+        logger(`Routing: [${route.method}] - ${route.match}`)
       }
 
       let action = [ route.action ]

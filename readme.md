@@ -92,6 +92,7 @@ router(server)([
 server.listen(8080)
 ```
 in the example above, the `/users/:id` route is authenticated first, then executes `getUserById`, after the execution of the `getUserById` the `logger` is executed right away.
+
   
 ## Why use restify-router-config?  
   
