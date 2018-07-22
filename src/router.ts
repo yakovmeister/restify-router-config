@@ -25,7 +25,7 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
       if (_route.group) {
         return routeTranslator(
           _route.routes
-          , _route.middleware
+          , middleware ? mapMiddleware([middleware, _route.middleware]) : _route.middleware
           , prefix ? appendPrefix(_route.group, prefix) : _route.group
         )
       }
