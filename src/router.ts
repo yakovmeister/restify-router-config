@@ -136,7 +136,6 @@ function isValidArray(data: string | Array<any>) {
  */
 export default function configureRoutes(server : any, verbose = false, logger = console.log) {
   return function (routes) {
-    console.log('route', JSON.stringify(routeTranslator(routes), null, 2))
     routes = routes.length ? sortRoutes(
       [].concat( ...routeTranslator(routes) )
     ) : []
