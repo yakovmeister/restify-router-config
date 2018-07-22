@@ -21,18 +21,17 @@ function normalizeEndpoint(endpoint: string) {
  */
 function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
   if (Array.isArray(route) && route.length) {
-    return route.map(function (_route) {
+    return [].concat(...route.map(function (_route) {
       if (_route.group) {
-
         return routeTranslator(
           _route.routes
           , _route.middleware
-          , _route.group
+          , prefix ? appendPrefix(_route.group, prefix) : _route.group
         )
       }
 
       return routeTranslator(_route, middleware, prefix)
-    })
+    }))
   }
 
   middleware = mapMiddleware([ middleware, route.middleware ])
@@ -71,12 +70,14 @@ function mapMiddleware(middlewares) {
  * @param prefix route prefix
  * @return string
  */
-function appendPrefix(route, prefix = false) {
+function appendPrefix(route, prefix: any = false) {
   if (prefix) {
-    route = `${prefix}${route.match}`.replace('//', '/')
+    route = route.replace(/^\/|\/$/g, '')
+    prefix = prefix.replace(/^\/|\/$/g, '')
+    route = `/${prefix}/${route}`.replace('//', '/')
   }
 
-  return route
+  return route.replace(/\/$/, '')
 }
 
 /**
@@ -135,9 +136,11 @@ function isValidArray(data: string | Array<any>) {
  */
 export default function configureRoutes(server : any, verbose = false, logger = console.log) {
   return function (routes) {
+    console.log('route', JSON.stringify(routeTranslator(routes), null, 2))
     routes = routes.length ? sortRoutes(
       [].concat( ...routeTranslator(routes) )
     ) : []
+
 
     // safely route flatten translated routes.
     return routes.map(function (route) {
