@@ -15,6 +15,7 @@ NOTE: This module is also compatible with [express](https://expressjs.com/) but 
 * Grouping - will add a prefix to your routes depending on the group.
 * Multiple Middleware - will let you add one or more middleware in most convenient way.
 * Pre/Post Middleware - let's you define whether the middleware should execute before or after executing your function
+* Nesting groups - allows you to nest your groups.
   
 ## Installation
   
@@ -40,20 +41,20 @@ router(server)([
     group: 'users',
     routes: [
       {
-        match: '/:id',
+        match: '/:id',                  // would generate /users/:id route
         middleware: restrictedRoute,
         method: 'get',
         action: getUserById
       },
       {
-        match: '/',
+        match: '/',                     // would generate /users
         method: 'get',
         action: getUser
       }
     ]
   },
   {
-    match: '/login',
+    match: '/login',                    // would generate login
     method: 'post',
     action: login
   }
@@ -61,6 +62,90 @@ router(server)([
 
 server.listen(8080)
 ```  
+
+### Nesting groups
+
+```javascript
+const router = require('restify-router-config')
+const restify = require('restify')
+
+const apiAuth = (req, res, next) => {
+  console.log('authed!'); 
+  next()
+}
+
+const loggingMW = (req, res, next) => {
+  console.log(req._timeStart)
+
+  next()
+}
+
+const logDone = (req, res, next) => {
+  console.log('done!')
+
+  next()
+}
+
+
+router(server) ([
+  {
+    group: 'api/v1',
+    middleware: apiAuth,
+    routes: [
+      {
+        match: '/hello',
+        method: 'get',
+        action: (req, res, next) => res.send('hello')
+      },
+      {
+        group: 'users',
+        middleware: [
+          ['before', loggingMW],
+          ['after', logDone]
+        ],
+        routes: [
+          {
+            match: '/:id',
+            method: 'get',
+            action: (req, res, next) => {
+              res.send('hello')
+
+              next()
+            }
+          },
+          {
+            match: '/:id/friends',
+            method: 'get',
+            action: (req, res, next) => {
+              res.send('hello')
+
+              next()
+            }
+          },
+          {
+            match: '/',
+            method: 'get',
+            action: (req, res, next) => {
+              res.send('hello')
+
+              next()
+            }
+          }
+        ]
+      }
+    ]
+  }
+])
+
+server.listen(4000)
+```  
+The example above would generate the following routes:
+```
+[get] - /api/v1/users/:id/friends
+[get] - /api/v1/users/:id
+[get] - /api/v1/hello
+[get] - /api/v1/users
+```
 
 ### Setting middleware's execution
 

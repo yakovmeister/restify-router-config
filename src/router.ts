@@ -25,8 +25,8 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
       if (_route.group) {
         return routeTranslator(
           _route.routes
-          , middleware ? mapMiddleware([middleware, _route.middleware]) : _route.middleware
-          , prefix ? appendPrefix(_route.group, prefix) : _route.group
+          , mapMiddleware([middleware, _route.middleware])
+          , appendPrefix(_route.group, prefix)
         )
       }
 
@@ -139,7 +139,6 @@ export default function configureRoutes(server : any, verbose = false, logger = 
     routes = routes.length ? sortRoutes(
       [].concat( ...routeTranslator(routes) )
     ) : []
-
 
     // safely route flatten translated routes.
     return routes.map(function (route) {
