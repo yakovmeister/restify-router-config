@@ -5,7 +5,7 @@
   "main": "dist/index.min.js",
   "types": "dist/src/router.d.ts",
   "scripts": {
-    "test": "nyc --check-coverage --lines 70 mocha -r ts-node/register test/**.test.ts",
+    "test": "nyc --check-coverage --lines 10 mocha -r ts-node/register test/**.test.ts",
     "rollup": "rollup -c",
     "clean": "rimraf ./dist",
     "build": "npm run clean && npm run rollup"
@@ -45,6 +45,7 @@
     "nyc": "^11.8.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.58.2",
+    "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-typescript2": "^0.14.0",
     "rollup-plugin-uglify": "^4.0.0",
     "ts-node": "^6.0.3",

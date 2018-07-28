@@ -1,6 +1,14 @@
 import { sortRoutes } from './sorts'
 
 /**
+ * Assign empty action if action was not specified
+ * @param req server request
+ * @param res server respones
+ * @param next ...
+ */
+function noop(req, res, next) { }
+
+/**
  * normalize our endpoint, make sure it doesn't 
  * end with slash.
  * @param  {string} endpoint endpoint to be normalized
@@ -19,9 +27,32 @@ function normalizeEndpoint(endpoint: string) {
  * @param  {string} prefix prepended to the beginning of endpoint
  * @returns object containing the translated route
  */
-function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
+export function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
   if (Array.isArray(route) && route.length) {
     return [].concat(...route.map(function (_route) {
+      const groupAndResourcesCoExist = _route.group && _route.resources 
+      const resourcesHasNoController = _route.resources && !_route.controller
+
+      if (groupAndResourcesCoExist) {
+        throw new Error(`Group and Resources cannot co-exist.`)
+      }
+
+      if (resourcesHasNoController) {
+        throw new Error(`Cannot resolve resources without specifying a controller`)
+      }
+
+      if (_route.resources) {
+        console.log(`This feature is under development`)
+
+        const resolved = resolveResources(_route)
+
+        return routeTranslator(
+          resolved
+          , mapMiddleware([middleware, _route.middleware])
+          , prefix
+        )
+      }
+
       if (_route.group) {
         return routeTranslator(
           _route.routes
@@ -38,11 +69,50 @@ function routeTranslator(route : any, middleware ?: any, prefix ?: any) {
   prefix = appendPrefix(route.match, prefix)
 
   return {
-    method: route.method,
+    method: assignWithDefault(route.method, 'get'),
     match: normalizeEndpoint(prefix),
     middleware,
-    action: route.action
+    action: assignWithDefault(route.action, noop)
   }
+}
+
+/**
+ * Safely assign default value if first argument is undefined
+ * @param value value intended to be assigned
+ * @param defaultValue fallback value
+ * @return mixed
+ */
+function assignWithDefault(value, defaultValue) {
+  return value ? value : defaultValue
+}
+
+/**
+ * Resolve resources by mapping corresponding functions to its endpoint
+ * @param route route
+ * @reutrn Array
+ */
+function resolveResources(route) {
+  const resources = [
+    { method: 'get', match: '/', functionName: 'index' },
+    { method: 'get', match: '/:id', functionName: 'view' },
+    { method: 'post', match: '/', functionName: 'store' },
+    { method: 'put', match: '/:id', functionName: 'update' },
+    { method: 'patch', match: '/:id', functionName: 'patch' },
+    { method: 'del', match: '/:id', functionName: 'delete' }
+  ]
+
+  return Object.entries(route.controller)
+    .map(([key, value]) => {
+      const resource = resources.find(each => each.functionName === key)
+
+      if (resource) {
+        return {
+          method: resource.method,
+          match: appendPrefix(resource.match, route.resources),
+          action: value
+        }
+      }
+    }).filter(item => item)
 }
 
 /**
@@ -128,6 +198,33 @@ function isValidArray(data: string | Array<any>) {
 }
 
 /**
+ * Flatten your route, takes care of your middleware and everything.
+ * @param routes 
+ * @return Array
+ */
+export function transformRoutes(routes) {
+  routes = routes.length ? sortRoutes(
+    [].concat( ...routeTranslator(routes) )
+  ) : []
+
+  return routes.map(function (route) {
+    let action = [ route.action ]
+
+    if (route.middleware.length) {
+      const [ before, after ] = groupMiddleware(route.middleware)
+
+      action = [ ...before, ...action, ...after]
+    }
+
+    return {
+      method: route.method,
+      endpoint: route.match,
+      action
+    }
+  })
+}
+
+/**
  * takes a restify server as an argument, returns a function
  * that takes an array of object.
  * @param {Server} server restify server
@@ -136,25 +233,14 @@ function isValidArray(data: string | Array<any>) {
  */
 export default function configureRoutes(server : any, verbose = false, logger = console.log) {
   return function (routes) {
-    routes = routes.length ? sortRoutes(
-      [].concat( ...routeTranslator(routes) )
-    ) : []
+    routes = transformRoutes(routes)
 
-    // safely route flatten translated routes.
-    return routes.map(function (route) {
+    routes.map(route => {
       if (verbose) {
-        logger(`Routing: [${route.method}] - ${route.match}`)
+        logger(`Routing: [${route.method}] - ${route.endpoint}`)
       }
 
-      let action = [ route.action ]
-
-      if (route.middleware.length) {
-        const [ before, after ] = groupMiddleware(route.middleware)
-
-        action = [ ...before, ...action, ...after]
-      }
-
-      return server[route.method](route.match, ...action)
+      return server[route.method](route.endpoint, ...route.action)
     })
   }
 }
