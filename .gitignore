@@ -3,3 +3,4 @@
 *.log*
 .nyc_output
 .rpt2_cache
+/dist

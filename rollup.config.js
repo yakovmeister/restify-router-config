@@ -1,12 +1,33 @@
-import typescript from 'rollup-plugin-typescript2'
-import { uglify } from 'rollup-plugin-uglify'
+import transpile from "rollup-plugin-typescript2"
+import { terser } from "rollup-plugin-terser"
+import alias from "@rollup/plugin-alias"
 
-export default {
-  entry: 'src/router.ts',
-  dest: 'dist/index.min.js',
-  format: 'cjs',
+const base = {
   plugins: [
-    typescript(),
-    uglify()
+    transpile(),
+    alias({
+      entries: {
+        "@module": "./src"
+      }
+    }),
+    terser({
+      output: {
+        comments: false
+      }
+    })
   ]
-}
+};
+
+export default [
+  Object.assign(
+    {},
+    base,
+    {
+      input: "src/router.ts",
+      output: {
+        format: "cjs",
+        file: "dist/index.min.js"
+      }
+    }
+  )
+];
